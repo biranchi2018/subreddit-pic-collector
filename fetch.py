@@ -10,6 +10,7 @@ subreddit = sys.argv[1]
 path = './photos/' + subreddit
 face_cascade = cv2.CascadeClassifier('./data/haarcascade_frontalface_default.xml')
 last_post = ""
+count = 0
 
 ##functions
 def getImg(url):
@@ -39,12 +40,20 @@ def getImgUrl(url,domain):
 if not os.path.exists(path):
     os.makedirs(path)
 
-for i in range(2):
-    request = r.get("https://www.reddit.com/r/" + subreddit + "/top.json?after=" + last_post).json()
-    if 'data' in request:
-        for node in request['data']['children']:
-            data = node['data'] 
-            after = data['name']
-            url = getImgUrl(data['url'],data['domain'])
+for i in range(4):
+    while True:
+        request = r.get("https://www.reddit.com/r/" + subreddit + "/top.json?count=" + str(count) + "&t=all&after=" + last_post).json()
+        print "Failed req"
+        if 'data' in request:
+            print "Req success"
+            count += 25
+            break
+    for node in request['data']['children']:
+        data = node['data'] 
+        last_post = data['name']
+        url = getImgUrl(data['url'],data['domain'])
+        try:
             getFaces(url,data['id'])
             print data['id'] + " " + data['domain']
+        except:
+            pass
