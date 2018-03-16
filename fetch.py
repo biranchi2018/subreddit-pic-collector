@@ -28,7 +28,7 @@ def getFaces(url,id):
             i = 1
             for (x,y,w,h) in faces:
                 crop_img = img[y:y+h, x:x+w]
-                cv2.imwrite( os.path.join(path, id + "_" + str(i) + '.jpg') ,cv2.resize(crop_img, (50, 50)))
+                cv2.imwrite(os.path.join(path, id + "_" + str(i) + '.jpg') ,cv2.resize(crop_img, (50, 50)))
                 i + 1
                 
 def getImgUrl(url,domain):
@@ -40,12 +40,14 @@ def getImgUrl(url,domain):
 if not os.path.exists(path):
     os.makedirs(path)
 
-for i in range(4):
+for i in range(6):
     while True:
+        failCounter = 1
         request = r.get("https://www.reddit.com/r/" + subreddit + "/top.json?count=" + str(count) + "&t=all&after=" + last_post).json()
-        print "Failed req"
+        print "\rFailed req " + str(failCounter),
+        failCounter += 1
         if 'data' in request:
-            print "Req success"
+            print "\nReq success"
             count += 25
             break
     for node in request['data']['children']:
